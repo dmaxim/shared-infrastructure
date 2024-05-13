@@ -3,9 +3,11 @@
 ## Argo Install Via Kustomize
 
 ```
-cd argo
+cd argo/manifests
 kustomize build . | kubectl apply -f -
 ```
+
+NOTE: The manifests are for a 3 node HA ArgoCD cluster. It requires a minimum of 4 nodes in the cluster due to node affinitiy rules.
 
 ### Chage Argo Password
 
@@ -16,4 +18,11 @@ argocd login localhost:8080
 argocd account update-password
 ```
 
-ym8KehNhe55BqLez
+## Setup Argo App
+
+```
+kubectl apply -f argo/argocd-app.yaml
+
+kubectl rollout restart -n argocd deployment argocd-repo-server
+
+```

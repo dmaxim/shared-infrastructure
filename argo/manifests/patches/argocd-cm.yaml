@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: argocd-cm
 data:
-  timeout.reconciliation: 240s
+  timeout.reconciliation: 300s
