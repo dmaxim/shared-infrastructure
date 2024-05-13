@@ -41,3 +41,12 @@ argocd admin import -n argocd - < backup-2021-09-14.yaml
 ````
 
 ## Prometheus Operator
+
+Do not try to install via ArgoCD and helm chart. ArgoCD alters the instance label that the alertmanager uses to identify the instance. This will cause the alertmanager to not be able to find the instance and will not be able to send alerts.
+
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring
+
+```
