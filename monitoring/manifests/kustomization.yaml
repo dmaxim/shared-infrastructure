@@ -5,3 +5,5 @@ namespace: monitoring
 resources:
   - resources/namespace.yaml
   - resources/argocd-metrics.yaml
+  - resources/argocd-repo.yaml
+  - resources/argocd-server.yaml
