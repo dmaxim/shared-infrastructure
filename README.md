@@ -26,3 +26,18 @@ kubectl apply -f argo/argocd-app.yaml
 kubectl rollout restart -n argocd deployment argocd-repo-server
 
 ```
+
+### Argo Backup
+
+```
+argocd admin export -n argocd > backup-$(data + "%Y-%m-%d").yaml
+```
+
+### Restore Argo Backup
+
+````
+argocd admin import -n argocd - < backup-2021-09-14.yaml
+```
+````
+
+## Prometheus Operator

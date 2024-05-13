@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync.gitlab: ""
+  name: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: monitoring
+  source:
+    path: monitoring/manifests
+    repoURL: https://github.com/dmaxim/shared-infrastructure.git
+    targetRevision: main
+  syncPolicy:
+    automated: {}
