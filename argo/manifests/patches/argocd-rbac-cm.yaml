@@ -4,3 +4,4 @@ metadata:
   name: argocd-rbac-cm
 data:
   policy.default: role:readonly
+  admin.enabled: "false"
