@@ -13,3 +13,4 @@ patches:
   - path: patches/argocd-server-deployment.yaml
   - path: patches/argocd-repo-server-deployment.yaml
   - path: patches/argocd-application-controller-statefulset.yaml
+  - path: patches/argocd-rbac-cm.yaml
