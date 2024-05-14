@@ -51,6 +51,14 @@ helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n
 
 ```
 
+## Install ArgoCD Notifications Manually
+
+```
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-notifications/release-1.0/manifests/install.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-notifications/release-1.0/catalog/install.yaml
+
+```
+
 ## Test a Slack Notification
 
 ```
@@ -59,7 +67,14 @@ argocd login localhost:8080
 # Trigger notification using in-cluster config map and secret
 argocd admin notifications template notify custom-slack-template nginx --recipient slack:argo-status
 
+
+
 # Render notification render generated notification in console
 argocd admin notifications template notify app-sync-succeeded guestbook
 
 ```
+
+argocd app create guestbook --repo https://github.com/DadaGore/argocd.git \
+ --path guestbook --dest-namespace guestbook \
+ --dest-server https://kubernetes.default.svc --directory-recurse \
+ --annotations notifications.argoproj.io/subscribe.on-sync-succeeded.slack=argo-status

@@ -4,3 +4,4 @@ metadata:
   name: argocd-cm
 data:
   timeout.reconciliation: 300s
+  accounts.dmaxim: apiKey, login
