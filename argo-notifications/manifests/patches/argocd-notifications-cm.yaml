@@ -9,3 +9,9 @@ data:
     message: |
       Application {{.app.metadata.name}} sync is {{.app.status.sync.status}}.
       Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+  defaultTriggers: |
+    - on-sync-status-unkown
+
+  defaultTriggers.mattermost: |
+    - on-sync-running
+    - on-sync-succeeded
