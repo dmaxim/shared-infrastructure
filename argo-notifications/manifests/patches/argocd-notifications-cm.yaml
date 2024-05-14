@@ -5,3 +5,7 @@ metadata:
 data:
   service.slack: |
     token: $slack-token
+  template.custom-slack-template: |
+    message: |
+      Application {{.app.metadata.name}} sync is {{.app.status.sync.status}}.
+      Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.

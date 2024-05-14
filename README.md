@@ -50,3 +50,16 @@ helm repo update
 helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack -n monitoring
 
 ```
+
+## Test a Slack Notification
+
+```
+argocd login localhost:8080
+
+# Trigger notification using in-cluster config map and secret
+argocd admin notifications template notify app-sync-succeeded nginx --recipient slack:argo-status
+
+# Render notification render generated notification in console
+argocd admin notifications template notify app-sync-succeeded guestbook
+
+```
