@@ -8,4 +8,5 @@ data:
     p, role:user-update, accounts, update, *, allow
     p, role:user-update, accounts, get, *, allow
     p, role:user-update, projects, update, argocd, allow
+    p, role:user-update, projects, update, cert-manager, allow
     g, dmaxim, role:user-update

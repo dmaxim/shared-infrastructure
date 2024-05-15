@@ -78,3 +78,12 @@ argocd app create guestbook --repo https://github.com/DadaGore/argocd.git \
  --path guestbook --dest-namespace guestbook \
  --dest-server https://kubernetes.default.svc --directory-recurse \
  --annotations notifications.argoproj.io/subscribe.on-sync-succeeded.slack=argo-status
+
+## Using Tokens in Commands
+
+```
+argocd proj role create-token argocd read-sync
+
+argocd app sync <application> --auth-token <token>
+
+```

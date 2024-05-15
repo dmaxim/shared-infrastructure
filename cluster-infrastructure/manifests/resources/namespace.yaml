@@ -1,0 +1,5 @@
+## Create cert-manager namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
