@@ -7,8 +7,3 @@ data:
   accounts.dmaxim: apiKey, login
   admin.enabled: "false"
   accounts.gitops-ci: apiKey
-  configManagementPlugins: |
-    - name: kustomize-build-with-helm
-      generate:
-        command: ["sh"", "-c"]
-        args: ["kustomize build --enable-helm"]
