@@ -25,4 +25,4 @@ spec:
   tls:
     - hosts:
         - argo-test.danmaxim.net
-      secretName: argocd-ui-tls
+      secretName: argocd-server-tls
