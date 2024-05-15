@@ -15,7 +15,7 @@ spec:
   destination:
     namespace: nginx
     server: https://kubernetes.default.svc
-  project: default
+  project: argocd
   source:
     repoURL: https://charts.bitnami.com/bitnami
     chart: nginx
