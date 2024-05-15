@@ -11,7 +11,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: 8m
   generation: 1
   labels:
-    app: argocd-ui
+    app: argocd-server
   name: argocd-ui
   namespace: argocd
 spec:
