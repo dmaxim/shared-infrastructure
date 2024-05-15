@@ -5,5 +5,5 @@ metadata:
 data:
   timeout.reconciliation: 300s
   accounts.dmaxim: apiKey, login
-  admin.enabled: "false"
+  admin.enabled: "true"
   accounts.gitops-ci: apiKey
