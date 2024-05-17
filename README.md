@@ -118,3 +118,17 @@ helm install external-secrets \
     --create-namespace \
    --set installCRDs=true
 ```
+
+## Install Argo Rollouts
+
+```
+kubectl create namespace argo-rollouts
+kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+```
+
+## Create a token to use in CI
+
+```
+argocd proj role create-token team ci-role -e 5d
+
+```

@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-ingress
+  namespace: blue-green
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: test-app.danmaxim.net
+      http:
+        paths:
+          - pathType: Prefix
+            backend:
+              service:
+                name: app
+                port:
+                  number: 3000
+            path: /
+  tls:
+    - hosts:
+        - test-app.danmaxim.net
+      secretName: test-app-tls

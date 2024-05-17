@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test-app
+  namespace: argocd
+  # annotations:
+  #   notifications.argoproj.io/subscribe.on-sync-succeeded.slack: argo-status
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  destination:
+    namespace: team-demo
+    server: https://kubernetes.default.svc
+  project: team
+  source:
+    path: testing/blue-green-deploy/auto
+    repoURL: https://github.com/dmaxim/shared-infrastructure.git
+    targetRevision: main
