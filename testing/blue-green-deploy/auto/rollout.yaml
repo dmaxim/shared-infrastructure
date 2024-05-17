@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: dmaxim/argo-cd-app:v1.0
+          image: dmaxim/argo-cd-app:v2.0
           ports:
             - name: http
               containerPort: 3000
