@@ -93,5 +93,28 @@ argocd app sync <application> --auth-token <token>
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
-helm install ingress-nginx ingress-nginx/ingress-nginx -n mxinfo-ingress
+helm install ingress-nginx ingress-nginx/ingress-nginx -n mxinfo-ingress \
+--set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz \
+--set controller.service.externalTrafficPolicy=Local
+```
+
+## Manual Cert manager Install
+
+```
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.14.5 --set installCRDs=true
+```
+
+## Install External Secrets
+
+```
+helm repo add external-secrets https://charts.external-secrets.io
+helm repo update
+
+helm install external-secrets \
+   external-secrets/external-secrets \
+    -n external-secrets \
+    --create-namespace \
+   --set installCRDs=true
 ```

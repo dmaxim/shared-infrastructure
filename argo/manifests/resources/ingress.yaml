@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: argo-dev.danmaxim.net
+    - host: mxinfo-cd.danmaxim.net
       http:
         paths:
           - backend:
@@ -25,5 +25,5 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - argo-dev.danmaxim.net
+        - mxinfo-cd.danmaxim.net
       secretName: argocd-server-tls
