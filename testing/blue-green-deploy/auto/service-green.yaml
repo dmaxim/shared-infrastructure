@@ -4,7 +4,7 @@ metadata:
   name: rollout-bluegreen-preview
   namespace: team-demo
 spec:
-  type: CluseterIP
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: 3000
