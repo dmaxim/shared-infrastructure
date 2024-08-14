@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync.gitlab: ""
+  name: demo-app-one
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: testing/demo-app-one
+    repoURL: https://github.com/dmaxim/shared-infrastructure.git
+    targetRevision: main
+  syncPolicy:
+    automated: {}
