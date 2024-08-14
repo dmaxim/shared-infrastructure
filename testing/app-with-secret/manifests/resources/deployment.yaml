@@ -22,4 +22,3 @@ spec:
             secretKeyRef:
               name: app-with-secret
               key: apikey
-        restartPolicy: Always
