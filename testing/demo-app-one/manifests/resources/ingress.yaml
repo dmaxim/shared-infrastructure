@@ -16,7 +16,7 @@ spec:
               service:
                 name: caddy
                 port:
-                  name: http
+                  number: 80
             path: /
             pathType: Prefix
   tls:
