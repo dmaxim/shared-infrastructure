@@ -4,5 +4,5 @@ namespace: default
 
 resources:
   - resources/deployment.yaml
-
+  - resources/service.yaml
 
