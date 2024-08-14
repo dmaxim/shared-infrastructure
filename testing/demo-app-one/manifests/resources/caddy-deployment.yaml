@@ -17,7 +17,7 @@ spec:
         image: caddy:alpine
         ports:
         - containerPort: 80
-            name: http
+          name: http
         volumeMounts:
         - name: caddy-config
           mountPath: /etc/caddy
