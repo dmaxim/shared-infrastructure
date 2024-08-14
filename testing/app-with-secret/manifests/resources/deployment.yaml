@@ -22,5 +22,7 @@ spec:
             secretKeyRef:
               name: app-with-secret
               key: apikey
+        - name: TEST_VALUE
+          value: "test"
 
 
