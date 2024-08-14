@@ -6,11 +6,12 @@ resources:
   - resources/deployment.yaml
   - resources/service.yaml
   - resources/caddy-deployment.yaml
+  - resources/ingress.yaml
 
 configMapGenerator:
   - name: caddy-config
     files:
       - resources/Caddyfile
 
-      
+
 

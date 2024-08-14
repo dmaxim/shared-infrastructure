@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  labels:
+    app: caddy
+  name: mxinfo-web
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: mxinfo-web.danmaxim.net
+      http:
+        paths:
+          - backend:
+              service:
+                name: caddy
+                port:
+                  name: http
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - mxinfo-web.danmaxim.net
+      secretName: caddy-tls
