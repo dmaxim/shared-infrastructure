@@ -6,6 +6,7 @@ resources:
   - github.com/argoproj/argo-cd/manifests/ha/cluster-install?ref=v2.11.4
   - resources/namespace.yaml
   - resources/demo-app-one.yaml
+  - resources/sealed-secrets.yaml
 
 patches:
   - path: patches/argocd-cm.yaml
