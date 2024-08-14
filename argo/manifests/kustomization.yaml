@@ -7,7 +7,7 @@ bases:
 
 resources:
   - resources/namespace.yaml
-  #- resources/ingress.yaml
+  - resources/demo-app-one.yaml
 
 patches:
   - path: patches/argocd-cm.yaml
