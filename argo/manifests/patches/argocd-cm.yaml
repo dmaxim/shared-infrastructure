@@ -4,6 +4,5 @@ metadata:
   name: argocd-cm
 data:
   timeout.reconciliation: 300s
-  accounts.dmaxim: apiKey, login
   admin.enabled: "true"
   accounts.gitops-ci: apiKey
