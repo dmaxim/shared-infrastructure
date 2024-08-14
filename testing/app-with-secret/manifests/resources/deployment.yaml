@@ -16,9 +16,11 @@ spec:
       - name: get-busy
         image: busybox
         command: ["sh", "-c", "while true; do sleep 3600; done"]
-        # env:
-        # - name: APIKEY
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: app-with-secret
-        #       key: apikey
+        env:
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: app-with-secret
+              key: apikey
+
+
