@@ -5,4 +5,12 @@ namespace: default
 resources:
   - resources/deployment.yaml
   - resources/service.yaml
+  - resources/caddy-deployment.yaml
+
+configMapGenerator:
+  - name: caddy-config
+    files:
+      - resources/Caddyfile
+
+      
 
