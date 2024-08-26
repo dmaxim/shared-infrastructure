@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app
+  labels:
+    app: nginx-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-app
+  template:
+    metadata:
+      labels:
+        app: nginx-app
+        app.kubernetes.io/name: nginx-app
+      annotations:
+        elastic.co/dataset: kubernetes.container_logs.nginx
+        elastic.co/namespace: nginx
+        elastic.co/preserve_original_event: "true"
+    spec:
+      containers:
+      - name: nginx-app
+        image: nginx:latest
+        ports:
+        - containerPort: 80
