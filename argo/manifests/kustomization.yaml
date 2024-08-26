@@ -5,13 +5,13 @@ namespace: argocd
 resources:
   - github.com/argoproj/argo-cd/manifests/ha/cluster-install?ref=v2.11.4
   - resources/namespace.yaml
-  - resources/demo-app-one.yaml
-  - resources/sealed-secrets.yaml
-  - resources/app-with-secret.yaml
+  #- resources/demo-app-one.yaml
+  #- resources/sealed-secrets.yaml
+  #- resources/app-with-secret.yaml
 
 patches:
   - path: patches/argocd-cm.yaml
   - path: patches/argocd-server-deployment.yaml
   - path: patches/argocd-repo-server-deployment.yaml
   - path: patches/argocd-application-controller-statefulset.yaml
-  - path: patches/argocd-rbac-cm.yaml
+ # - path: patches/argocd-rbac-cm.yaml
