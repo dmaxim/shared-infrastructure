@@ -7,7 +7,7 @@ metadata:
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/tls-passthrough: "true"
     cert-manager.io/issue-temporary-certificate: "true"
-    ginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
   labels:
     app: argocd-server
     release: argocd-ingres
