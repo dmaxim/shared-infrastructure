@@ -11,7 +11,7 @@ spec:
   project: default
   source:
     path: argo/manifests
-    repoURL: https://github.com/dmaxim/shared-infrastructure.git
+    repoURL: git@github.com:dmaxim/shared-infrastructure.git
     targetRevision: main
   syncPolicy:
     automated: {}
