@@ -133,3 +133,10 @@ kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/rele
 argocd proj role create-token team ci-role -e 5d
 
 ```
+
+
+## Setup Argo Workflows
+
+````
+k port-forward 
+````
