@@ -4,6 +4,7 @@ namespace: argocd
 
 resources:
   - github.com/argoproj/argo-cd/manifests/ha/cluster-install?ref=v2.11.4
+  - github.com/argoproj/argo-workflows/releases/download/v3.6.0/install.yaml
   - resources/namespace.yaml
   - resources/ingress.yaml
   #- resources/demo-app-one.yaml
