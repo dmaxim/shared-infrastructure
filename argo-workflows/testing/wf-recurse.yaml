@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: wf-recurse-
+spec:
+  entrypoint: dag-template
+  templates:
+  - name: dag-template
+    dag:
+      tasks:
+      - name: role-dice
+        template: task-role-dice
+      - name: six
+        depends: role-dice.Succeeded
+        when: "{{tasks.role-dice.outputs.result}} == 6"
+        template: task-six
+      - name: not-six
+        depends: role-dice.Succeeded
+        when: "{{tasks.role-dice.outputs.result}} != 6"
+        template: dag-template # Recurse
+
+  - name: task-role-dice
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        import random
+        number = random.randint(1, 6)
+        print(number)
+
+  - name: task-six
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        print("got a six")

@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: wf-output-parameter
+spec:
+  entrypoint: script-result-template
+  arguments:
+    parameters:
+    - name: message1
+      value: "Task 1 executed"
+    - name: message2
+      value: "Task 2 executed"
+  templates:
+  - name: script-result-template
+    inputs:
+      parameters:
+      - name: message1
+      - name: message2
+    dag:
+      tasks:
+      - name: task1
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.message1}}"
+        template: task-template
+      - name: task2
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.message2}}"
+        template: task-template
+        dependencies: [task1]
+      - name: task3
+        template: task-output
+        dependencies: [task1]
+      - name: task4
+        arguments:
+          parameters:
+          - name: text
+            value: "{{tasks.task3.outputs.parameters.task-param}}"
+        template: task-template
+        dependencies: [task2, task3]
+
+  - name: task-template
+    inputs:
+      parameters:
+      - name: text
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        p = "{{inputs.parameters.text}}"
+        print(p)
+  - name: task-output
+    script:
+      image: node:20.1-alpine
+      command: [node]
+      source: |
+        var out = "print result task";
+        console.log(out);
+    outputs:
+      parameters:
+      - name: task-param
+        value: "task-output-parameter"

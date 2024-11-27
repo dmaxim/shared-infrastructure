@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: cron-wf-dag
+spec:
+  schedule: "0 2 * * *" # everyday at 2
+  concurrencyPolicy: "Allow" # Allow | Forbid | Replace
+  startingDeadlineSeconds: 0
+  workflowSpec:
+    entrypoint: dag-template
+    templates:
+    - name: dag-template
+      dag:
+        tasks:
+        - name: task1
+          template: task-template
+        - name: task2
+          template: task-template
+          dependencies: [task1]
+        - name: task3
+          template: task-template
+          dependencies: [task1]
+        - name: task4
+          template: task-template
+          dependencies: [task2, task3]
+    - name: task-template
+      script:
+        image: python:alpine3.6
+        command: [python]
+        source: |
+          print("task executed changed")

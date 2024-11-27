@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: wf-steps-template-serial
+spec:
+  entrypoint: steps-template-serial
+  templates:
+  - name: steps-template-serial
+    steps:
+    - - name: step1
+        template: task-template
+    - - name: step2
+        template: task-template
+    - - name: step3 
+        template: task-template
+  - name: task-template
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        print("task executed")

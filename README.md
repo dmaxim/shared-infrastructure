@@ -137,6 +137,17 @@ argocd proj role create-token team ci-role -e 5d
 
 ## Setup Argo Workflows
 
+Quickstart
 ````
-k port-forward 
+k create namespace argo
+ARGO_WORKFLOWS_VERSION=v3.6.0
+kubectl apply -n argo -f "https://github.com/argoproj/argo-workflows/releases/download/${ARGO_WORKFLOWS_VERSION}/quick-start-minimal.yaml"
+
+kubectl delete -n argo -f "https://github.com/argoproj/argo-workflows/releases/download/${ARGO_WORKFLOWS_VERSION}/quick-start-minimal.yaml"
+
+kubectl apply -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.6.0/install.yaml
+
+kubectl delete -n argo -f https://github.com/argoproj/argo-workflows/releases/download/v3.6.0/install.yaml
+
+k port-forward -n argo svc/argo-server -n argo 2746:2746
 ````

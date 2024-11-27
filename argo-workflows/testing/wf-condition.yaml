@@ -1,0 +1,74 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: wf-condition
+spec:
+  entrypoint: condition-template
+  arguments:
+    parameters:
+    - name: messageA
+      value: "A"
+    - name: messageB
+      value: "B"
+  templates:
+  - name: condition-template
+    inputs:
+      parameters:
+      - name: messageA
+      - name: messageB
+    dag:
+      tasks:
+      - name: task1
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.messageA}}"
+        template: task-decision
+      - name: task2
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.messageB}}"
+        template: task-decision
+    
+      - name: taska
+        template: task-a
+        dependencies: [task1]
+        when: "{{tasks.task1.outputs.result}} == A"
+      - name: taskb
+        template: task-b
+        dependencies: [task1]
+        when: "{{tasks.task1.outputs.result}} == B"
+      - name: taska2
+        template: task-a
+        dependencies: [task2]
+        when: "{{tasks.task2.outputs.result}} == A"
+      - name: taskb2
+        template: task-b
+        dependencies: [task2]
+        when: "{{tasks.task2.outputs.result}} == B"
+  
+  - name: task-decision
+    inputs:
+      parameters:
+      - name: text
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        p = "{{inputs.parameters.text}}"
+        print(p) 
+
+  - name: task-a
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        print("Task A was executed")
+
+  - name: task-b
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        print("Task B was executed")
