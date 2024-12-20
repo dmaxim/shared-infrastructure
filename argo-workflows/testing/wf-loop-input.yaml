@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: wf-loop-input
+spec:
+  entrypoint: loop-template
+  arguments:
+    parameters:
+    - name: message1
+      value: "Task 1 executed"
+    - name: message2
+      value: "Task 2 executed"
+    - name: ingest-list
+      value: |
+        [
+          { "extractor": "PythonExtractor", "table": "Table 1"},
+          { "extractor": "PySparkExtractor", "table": "Table 2"},
+          { "extractor": "DaskExtractor", "table": "Table 3"}
+        ]
+  templates:
+  - name: loop-template
+    inputs:
+      parameters:
+      - name: message1
+      - name: message2
+      - name: ingest-list
+    dag:
+      tasks:
+      - name: task1
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.message1}}"
+        template: task-template
+      - name: task2
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.message2}}"
+        template: task-template
+      - name: task3
+        template: task-loop-set
+        dependencies: [task1]
+        arguments:
+          parameters:
+          - name: extractor
+            value: "{{item.extractor}}"
+          - name: table
+            value: "{{item.table}}"
+        withParam: "{{inputs.parameters.ingest-list}}"
+
+  - name: task-template
+    inputs:
+      parameters:
+      - name: text
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        p = "{{inputs.parameters.text}}"
+        print(p)
+
+  - name: task-loop-set
+    inputs:
+      parameters:
+      - name: extractor
+      - name: table
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        print("Applying ", "{{inputs.parameters.extractor}}", "to the table ", "{{inputs.parameters.table}}")
+        

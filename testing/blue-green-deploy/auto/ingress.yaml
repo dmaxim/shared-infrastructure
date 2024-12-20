@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rollout-ingress
+  namespace: team-demo
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: test-rollout.danmaxim.net
+      http:
+        paths:
+          - pathType: Prefix
+            backend:
+              service:
+                name: rollout-bluegreen-active
+                port:
+                  number: 80
+            path: /
+  tls:
+    - hosts:
+        - test-rollout.danmaxim.net
+      secretName: test-roleout-tls

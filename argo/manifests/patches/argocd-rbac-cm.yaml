@@ -10,4 +10,3 @@ data:
     p, role:user-update, projects, update, argocd, allow
     p, role:user-update, projects, update, cert-manager, allow
     p, role:user-update, projects, update, default, allow
-    g, dmaxim, role:user-update

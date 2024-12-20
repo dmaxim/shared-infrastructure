@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: team
+spec:
+  roles:
+    - name: team-admin
+      description: admin privileges
+      policies:
+        - p, proj:team:team-admin, applications, *, team/*, allow
+    - name: ci-role
+      description: ci privileges
+      policies:
+        - p, proj:team:ci-role, applications, sync, team/*, allow
+        - p, proj:team:ci-role, applications, get, team/*, allow
+        - p, proj:team:ci-role, applications, create, team/*, allow
+        - p, proj:team:ci-role, applications, update, team/*, allow
+        - p, proj:team:ci-role, applications, delete, team/*, allow
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  description: Project to configure all applications for team
+  destinations:
+    - namespace: team-*
+      server: "*"
+  sourceRepos:
+    - https://github.com/dmaxim/shared-infrastructure.git

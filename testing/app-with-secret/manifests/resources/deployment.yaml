@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: get-busy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: get-busy
+  template:
+    metadata:
+      labels:
+        app: get-busy
+    spec:
+      containers:
+      - name: get-busy
+        image: busybox
+        command: ["sh", "-c", "while true; do sleep 3600; done"]
+        env:
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: app-with-secret
+              key: apikey
+        - name: TEST_VALUE
+          value: "test"
+
+

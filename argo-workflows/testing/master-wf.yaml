@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: cron-wf-master
+spec:
+    schedule: "0 * * * *"
+    concurrencyPolicy: "Replace"
+    startingDeadlineSeconds: 0
+    workflowSpec:
+      entrypoint: dag-master
+      templates:
+      - name: dag-master
+        dag:
+          task:
+          - name: task-dag
+            template: triggerWorkflow
+            arguments:
+              parameters:
+                - name: workflowTemplate
+                  value: wf-template-dag
+          - name: task-loop
+            depends: task-dag.Succeeded
+            template: triggerWorkflow
+            arguments:
+              parameters:
+                - name: workflowTemplate
+                  value: wf-template-loop
+      - name: triggerWorkflow
+        inputs:
+          parameters:
+          - name: workflowTemplate
+        resources:
+          action: create
+          manifest:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Workflow
+            metadata:
+              generateName: {{inputs.parameters.workflowTemplate}}-
+            spec:
+              workflowTemplateRef:
+                name: {{inputs.parameters.workflowTemplate}}
+            successCondition: status.phase == Succeeded
+            failureCondition: status.phase in (Failed, Error)

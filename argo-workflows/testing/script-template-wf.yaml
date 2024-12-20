@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: script-template-wf-
+spec:
+  entrypoint: script-template
+  templates:
+  - name: script-template
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        print("Script template executed")
+  

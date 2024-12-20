@@ -3,7 +3,10 @@ kind: Ingress
 metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    #kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/tls-passthrough: "true"
+    cert-manager.io/issue-temporary-certificate: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
   labels:
     app: argocd-server
@@ -13,7 +16,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: mxinfo-cd.danmaxim.net
+    - host: argocd.danmaxim.net
       http:
         paths:
           - backend:
@@ -25,5 +28,5 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - mxinfo-cd.danmaxim.net
-      secretName: argocd-server-tls
+        - argocd.danmaxim.net
+      secretName: argocd-secret

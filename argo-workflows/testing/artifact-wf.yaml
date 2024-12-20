@@ -1,0 +1,79 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: wf-output-artifact
+spec:
+  entrypoint: output-artifact-template
+  arguments:
+    parameters:
+    - name: message1
+      value: "Task 1 executed"
+    - name: message2
+      value: "Task 2 executed"
+  templates:
+  - name: output-artifact-template
+    inputs:
+      parameters:
+      - name: message1
+      - name: message2
+    dag:
+      tasks:
+      - name: task1
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.message1}}"
+        template: task-template
+      - name: task2
+        arguments:
+          parameters:
+          - name: text
+            value: "{{inputs.parameters.message2}}"
+        template: task-template
+        dependencies: [task1]
+      - name: task3
+        template: task-output-artifact
+        dependencies: [task1]
+      - name: task4
+        arguments:
+          artifacts:
+          - name: text
+            from: "{{tasks.task3.outputs.artifacts.artifact-out}}"
+        template: task-input-artifact
+        dependencies: [task2, task3]
+
+  - name: task-template
+    inputs:
+      parameters:
+      - name: text
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        p = "{{inputs.parameters.text}}"
+        print(p)
+  - name: task-output-artifact
+    script:
+      image: node:20.1-alpine
+      command: [node]
+      source: |
+        var par = "output written to file - event json";
+        const fs = require('fs');
+        fs.writeFileSync('/tmp/output-params.txt', par);
+    outputs:
+      artifacts:
+      - name: artifact-out
+        path: /tmp/output-params.txt
+
+  - name: task-input-artifact
+    inputs:
+      artifacts:
+      - name: text
+        path: /tmp/text
+    script:
+      image: python:alpine3.6
+      command: [python]
+      source: |
+        with open('/tmp/text', 'r') as f:
+          lines = f.read()
+          print(lines)

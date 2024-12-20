@@ -1,0 +1,9 @@
+
+
+configMapGenerator:
+  - name: caddy-config
+    files:
+      - resources/Caddyfile
+
+
+
