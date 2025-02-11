@@ -9,7 +9,7 @@ kustomize build . | kubectl apply -f -
 
 NOTE: The manifests are for a 3 node HA ArgoCD cluster. It requires a minimum of 4 nodes in the cluster due to node affinitiy rules.
 
-### Chage Argo Password
+### Change Argo Password
 
 ```
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
