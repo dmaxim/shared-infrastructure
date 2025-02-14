@@ -133,7 +133,13 @@ kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/rele
 argocd proj role create-token team ci-role -e 5d
 
 ```
+## Kubectl plugin (or install with Homebrew)
 
+curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-darwin-arm64
+
+chmod +x ./kubectl-argo-rollouts-darwin-arm64
+
+sudo mv ./kubectl-argo-rollouts-darwin-arm64 /usr/local/bin/kubectl-argo-rollouts
 
 ## Setup Argo Workflows
 
@@ -151,3 +157,41 @@ kubectl delete -n argo -f https://github.com/argoproj/argo-workflows/releases/do
 
 k port-forward -n argo svc/argo-server -n argo 2746:2746
 ````
+
+Authentication
+
+k create role manual-access --verb=list,update --resource=workflows.argoproj.io
+
+k create sa manual-access
+
+kubectl create rolebinding manual-access --role=manual-access --serviceaccount=argo:manual-access
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: manual-token
+  namespace: argo
+  annotations:
+    kubernetes.io/service-account.name: manual-access
+type: kubernetes.io/service-account-token
+EOF
+
+
+ARGO_TOKEN="Bearer $(kubectl get secret -n argo manual-token -o=jsonpath='{.data.token}' | base64 --decode)"
+echo $ARGO_TOKEN
+
+
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wf-token
+  namespace: argo
+  annotations:
+    kubernetes.io/service-account.name: argo-workflow-sa
+type: kubernetes.io/service-account-token
+EOF
+
+ARGO_TOKEN="Bearer $(kubectl get secret -n argo wf-token -o=jsonpath='{.data.token}' | base64 --decode)"
+echo $ARGO_TOKEN

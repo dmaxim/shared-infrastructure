@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  password: 
+  username: 
+  sshPrivateKey: 
+kind: Secret
+metadata:
+  name: git-creds
+  namespace: argocd
+type: Opaque

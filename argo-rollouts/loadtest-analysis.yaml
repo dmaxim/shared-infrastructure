@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: loadtest
+spec:
+  metrics:
+  - name: loadtest-vote
+    provider:
+      job:
+        spec:
+          template:
+            spec:
+              containers:
+              - name: siege
+                image: schoolofdevops/loadtest:v1
+                command:
+                  - siege
+                  - "--concurrent=2"
+                  - "--benchmark"
+                  - "--time=5m"
+                  - "--header='X-Canary: siege'"
+                  - "https://vote.danmaxim.net"
+              restartPolicy: Never
+              # hostAliases:
+              # - ip: "xx.xx.xx.xx" # Ip address of the worker where the ingress controller is running
+              #   hostnames:
+              #   - "vote.example.com"
+          backoffLimit: 4
