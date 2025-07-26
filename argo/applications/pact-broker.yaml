@@ -10,7 +10,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    repoURL: oci://ghcr.io/pact-foundation/pact-broker-chart/pact-broker
+    repoURL: oci://ghcr.io/pact-foundation/pact-broker-chart
     chart: pact-broker
     targetRevision: 2.112.0
   syncPolicy:
