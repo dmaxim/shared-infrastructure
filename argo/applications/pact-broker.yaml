@@ -13,7 +13,7 @@ spec:
     chart: pact-broker/pact-broker
     helm:
     repoURL: https://pact-foundation.github.io/pact-broker-chart/
-    targetRevision: 3.2.1
+    targetRevision: 3.3.1
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
