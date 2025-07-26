@@ -16,7 +16,7 @@ spec:
         - name: installCRDs
           value: "true"
     repoURL: https://pact-foundation.github.io/pact-broker-chart/
-    targetRevision: v3.2.1
+    targetRevision: 3.2.1
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
