@@ -12,7 +12,7 @@ spec:
   source:
     chart: pact-broker
     helm:
-    repoURL: https://github.com/pact-foundation/pact-broker-chart/tree/master/charts
+    repoURL: https://pact-foundation.github.io/pact-broker-chart
     targetRevision: 2.112.0
   syncPolicy:
     syncOptions:
