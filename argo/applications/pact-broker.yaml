@@ -1,20 +1,20 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  annotations:
-    notifications.argoproj.io/subscribe.on-sync.gitlab: ""
-  name: pact-broker
-spec:
-  destination:
-    namespace: mxinfo-infrastructure
-    server: https://kubernetes.default.svc
-  project: default
-  source:
-    repoURL: oci://ghcr.io/pact-foundation/pact-broker-chart
-    chart: pact-broker
-    targetRevision: 2.112.0
-  syncPolicy:
-    syncOptions:
-      - CreateNamespace=true
-    automated: {}
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   annotations:
+#     notifications.argoproj.io/subscribe.on-sync.gitlab: ""
+#   name: pact-broker
+# spec:
+#   destination:
+#     namespace: mxinfo-infrastructure
+#     server: https://kubernetes.default.svc
+#   project: default
+#   source:
+#     repoURL: oci://ghcr.io/pact-foundation/pact-broker-chart
+#     chart: pact-broker
+#     targetRevision: 2.112.0
+#   syncPolicy:
+#     syncOptions:
+#       - CreateNamespace=true
+#     automated: {}
 
