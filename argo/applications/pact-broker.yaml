@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync.gitlab: ""
+  name: pact-broker
+spec:
+  destination:
+    namespace: mxinfo-infrastructure
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: pact-broker/pact-broker
+    helm:
+      parameters:
+        - name: installCRDs
+          value: "true"
+    repoURL: https://pact-foundation.github.io/pact-broker-chart/
+    targetRevision: v3.2.1
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated: {}
+
+
+
