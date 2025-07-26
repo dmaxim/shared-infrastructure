@@ -12,9 +12,6 @@ spec:
   source:
     chart: pact-broker/pact-broker
     helm:
-      parameters:
-        - name: installCRDs
-          value: "true"
     repoURL: https://pact-foundation.github.io/pact-broker-chart/
     targetRevision: 3.2.1
   syncPolicy:
