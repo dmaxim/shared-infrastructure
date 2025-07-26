@@ -10,14 +10,12 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    chart: pact-broker/pact-broker
+    chart: pact-broker
     helm:
-    repoURL: https://pact-foundation.github.io/pact-broker-chart/
+    repoURL: https://github.com/pact-foundation/pact-broker-chart/tree/master/charts
     targetRevision: 2.112.0
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
     automated: {}
-
-
 
