@@ -10,7 +10,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-  - repoURL: git@github.com:dmaxim/shared-infrastructure.git
+    repoURL: git@github.com:dmaxim/shared-infrastructure.git
     path: application-manifests/pact-func/pact-func
     targetRevision: HEAD
     helm:
