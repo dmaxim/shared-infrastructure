@@ -195,3 +195,5 @@ EOF
 
 ARGO_TOKEN="Bearer $(kubectl get secret -n argo wf-token -o=jsonpath='{.data.token}' | base64 --decode)"
 echo $ARGO_TOKEN
+
+
