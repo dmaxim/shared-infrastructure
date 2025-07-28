@@ -60,19 +60,23 @@ service:
 ingress:
   enabled: true
   className: "nginx"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  annotations: {
     nginx.ingress.kubernetes.io/rewrite-target: /api/UploadPactFile
+  }
+   
   hosts:
     - host: pact-poc.danmaxim.net
       paths:
         - path: /contracts/publish
           pathType: Prefix
-  tls: [ ]
-   - secretName: pact-poc-tls
-     hosts:
-       - pact-poc.danmaxim.net
+  tls: [ 
+    
+      secretName: pact-poc-tls,
+      hosts: [
+        pact-poc.danmaxim.net
+      ]
+    
+  ]
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
