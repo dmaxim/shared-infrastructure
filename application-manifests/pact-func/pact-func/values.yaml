@@ -61,7 +61,7 @@ ingress:
   enabled: true
   className: "nginx"
   annotations: {
-    cert-manager.io/cluster-iissuer: "letsencrypt-prod",
+    cert-manager.io/cluster-issuer: "letsencrypt-prod",
     nginx.ingress.kubernetes.io/rewrite-target: /api/UploadPactFile
   }
    
