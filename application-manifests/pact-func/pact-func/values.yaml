@@ -71,13 +71,16 @@ ingress:
         - path: /contracts/publish
           pathType: Prefix
   tls: [ 
-    
-      secretName: pact-poc-tls,
+    {
       hosts: [
         pact-poc.danmaxim.net
-      ]
-    
+      ],
+      secretName: pact-poc-tls,
+    },
+
   ]
+ 
+  
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
