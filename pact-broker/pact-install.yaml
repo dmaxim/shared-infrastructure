@@ -1,0 +1,585 @@
+---
+# Source: pact-broker/charts/postgresql/templates/primary/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: pact-broker-postgresql
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.13
+    app.kubernetes.io/component: primary
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: pact-broker
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 5432
+---
+# Source: pact-broker/charts/postgresql/templates/primary/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pact-broker-postgresql
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.13
+    app.kubernetes.io/component: primary
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: pact-broker
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+---
+# Source: pact-broker/charts/postgresql/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pact-broker-postgresql
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.13
+automountServiceAccountToken: false
+---
+# Source: pact-broker/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pact-broker-service-account
+  namespace: pact-broker-poc
+  labels:
+    app.kubernetes.io/component: pact-broker
+automountServiceAccountToken: true
+---
+# Source: pact-broker/charts/postgresql/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pact-broker-postgresql
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.13
+type: Opaque
+data:
+  postgres-password: "dFduZVFVNjNmeQ=="
+  password: "c3N0WWxKUVliYw=="
+  # We don't auto-generate LDAP password when it's not provided as we do for other passwords
+---
+# Source: pact-broker/charts/postgresql/templates/primary/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pact-broker-postgresql-hl
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.13
+    app.kubernetes.io/component: primary
+  annotations:
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # We want all pods in the StatefulSet to have their addresses published for
+  # the sake of the other Postgresql pods even before they're ready, since they
+  # have to be able to talk to each other in order to become ready.
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: pact-broker/charts/postgresql/templates/primary/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pact-broker-postgresql
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.13
+    app.kubernetes.io/component: primary
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: pact-broker/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pact-broker
+  namespace: "pact-broker-poc" 
+  labels:
+    name: pact-broker
+    app.kubernetes.io/name: pact-broker
+    helm.sh/chart: pact-broker
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+      nodePort: null
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/name: pact-broker
+---
+# Source: pact-broker/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pact-broker
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/name: pact-broker
+    helm.sh/chart: pact-broker
+    app.kubernetes.io/instance: pact-broker
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: pact-broker
+      app.kubernetes.io/name: pact-broker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pact-broker
+        app.kubernetes.io/instance: pact-broker
+    spec:
+      serviceAccountName: pact-broker-service-account
+      automountServiceAccountToken: true
+      securityContext:
+        fsGroup: 1001
+      containers:
+        - name: pact-broker
+          image: docker.io/pactfoundation/pact-broker:2.124.0-pactbroker2.112.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+          ports:
+            - name: http
+              containerPort: 9292
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          env:
+            # Logging
+            
+            - name: PACT_BROKER_LOG_LEVEL
+              value: "info"
+            - name: PACT_BROKER_LOG_FORMAT
+              value: "default"
+            - name: PACT_BROKER_HTTP_DEBUG_LOGGING_ENABLED
+              value: "false"
+            - name: PACT_BROKER_HIDE_PACTFLOW_MESSAGES
+              value: "true"
+            # Database
+            - name: PACT_BROKER_DATABASE_ADAPTER
+              value: "postgres"
+            - name: PACT_BROKER_DATABASE_HOST
+              value: pact-broker-postgresql
+            - name: PACT_BROKER_DATABASE_PORT
+              value: "5432"
+            - name: PACT_BROKER_DATABASE_NAME
+              value: "bitnami_broker"
+            - name: PACT_BROKER_DATABASE_USERNAME
+              value: "bn_broker"
+            - name: PACT_BROKER_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pact-broker-postgresql
+                  key: password
+            - name: PACT_BROKER_DATABASE_SSLMODE
+              value: "prefer"
+            - name: PACT_BROKER_SQL_LOG_LEVEL
+              value: "none"
+            - name: PACT_BROKER_SQL_LOG_WARN_DURATION
+              value: "5"
+            - name: PACT_BROKER_SQL_ENABLE_CALLER_LOGGING
+              value: "false"
+            - name: PACT_BROKER_DATABASE_MAX_CONNECTIONS
+              value: "4"
+            - name: PACT_BROKER_DATABASE_POOL_TIMEOUT
+              value: "5"
+            - name: PACT_BROKER_DATABASE_CONNECT_MAX_RETRIES
+              value: "0"
+            - name: PACT_BROKER_AUTO_MIGRATE_DB
+              value: "true"
+            - name: PACT_BROKER_AUTO_MIGRATE_DB_DATA
+              value: "true"
+            - name: PACT_BROKER_ALLOW_MISSING_MIGRATION_FILES
+              value: "true"
+            - name: PACT_BROKER_DATABASE_STATEMENT_TIMEOUT
+              value: "15"
+            - name: PACT_BROKER_METRICS_SQL_STATEMENT_TIMEOUT
+              value: "30"
+            - name: PACT_BROKER_DATABASE_CONNECTION_VALIDATION_TIMEOUT
+              value: "3600"
+            # Database Cleanup (embedded mode)
+            # Authentication and authorization
+            - name: PACT_BROKER_BASIC_AUTH_ENABLED
+              value: "true"
+            - name: PACT_BROKER_BASIC_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pact-broker-secrets
+                  key: pact-broker-write
+            - name: PACT_BROKER_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pact-broker-secrets
+                  key: pact-broker-write-password
+            - name: PACT_BROKER_BASIC_AUTH_READ_ONLY_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pact-broker-secrets
+                  key: pact-broker-read
+            - name: PACT_BROKER_BASIC_AUTH_READ_ONLY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pact-broker-secrets
+                  key: pact-broker-read-password
+            - name: PACT_BROKER_ALLOW_PUBLIC_READ
+              value: "false"
+            - name: PACT_BROKER_PUBLIC_HEARTBEAT
+              value: "true"
+            - name: PACT_BROKER_ENABLE_PUBLIC_BADGE_ACCESS
+              value: "false"
+            # Webhooks
+            - name: PACT_BROKER_WEBHOOK_RETRY_SCHEDULE
+              value: "10 60 120 300 600 1200"
+            - name: PACT_BROKER_WEBHOOK_HTTP_METHOD_WHITELIST
+              value: "POST"
+            - name: PACT_BROKER_WEBHOOK_HTTP_CODE_SUCCESS
+              value: "200 201 202 203 204 205 206"
+            - name: PACT_BROKER_WEBHOOK_SCHEME_WHITELIST
+              value: "https"
+            - name: PACT_BROKER_DISABLE_SSL_VERIFICATION
+              value: "false"
+            # Resources
+            - name: PACT_BROKER_PORT
+              value: "9292"
+            - name: PACT_BROKER_SHIELDS_IO_BASE_URL
+              value: "https://img.shields.io"
+            - name: PACT_BROKER_BADGE_PROVIDER_MODE
+              value: "redirect"
+            - name: PACT_BROKER_ENABLE_DIAGNOSTIC_ENDPOINTS
+              value: "true"
+            - name: PACT_BROKER_USE_HAL_BROWSER
+              value: "true"
+            # Domain
+            - name: PACT_BROKER_CHECK_FOR_POTENTIAL_DUPLICATE_PACTICIPANT_NAMES
+              value: "true"
+            - name: PACT_BROKER_CREATE_DEPLOYED_VERSIONS_FOR_TAGS
+              value: "true"
+            - name: PACT_BROKER_USE_FIRST_TAG_AS_BRANCH
+              value: "true"
+            - name: PACT_BROKER_AUTO_DETECT_MAIN_BRANCH
+              value: "true"
+            - name: PACT_BROKER_MAIN_BRANCH_CANDIDATES
+              value: "develop main master"
+            - name: PACT_BROKER_ALLOW_DANGEROUS_CONTRACT_MODIFICATION
+              value: "false"
+            - name: PACT_BROKER_PACT_CONTENT_DIFF_TIMEOUT
+              value: "15"
+            # Miscellaneous
+          resources:
+            limits:
+              cpu: 2500m
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          volumeMounts:
+            []
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 300
+            periodSeconds: 1
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /diagnostic/status/heartbeat
+              port: http
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            httpGet:
+              path: /diagnostic/status/heartbeat
+              port: http
+      volumes:
+        []
+---
+# Source: pact-broker/charts/postgresql/templates/primary/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pact-broker-postgresql
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.5.0
+    helm.sh/chart: postgresql-16.7.13
+    app.kubernetes.io/component: primary
+spec:
+  replicas: 1
+  serviceName: pact-broker-postgresql-hl
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: pact-broker
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  template:
+    metadata:
+      name: pact-broker-postgresql
+      labels:
+        app.kubernetes.io/instance: pact-broker
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: postgresql
+        app.kubernetes.io/version: 17.5.0
+        helm.sh/chart: postgresql-16.7.13
+        app.kubernetes.io/component: primary
+    spec:
+      serviceAccountName: pact-broker-postgresql
+      
+      automountServiceAccountToken: false
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: pact-broker
+                    app.kubernetes.io/name: postgresql
+                    app.kubernetes.io/component: primary
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      hostNetwork: false
+      hostIPC: false
+      containers:
+        - name: postgresql
+          image: docker.io/bitnami/postgresql:17.5.0-debian-12-r12
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            # Authentication
+            - name: POSTGRES_USER
+              value: "bn_broker"
+            - name: POSTGRES_PASSWORD_FILE
+              value: /opt/bitnami/postgresql/secrets/password
+            - name: POSTGRES_POSTGRES_PASSWORD_FILE
+              value: /opt/bitnami/postgresql/secrets/postgres-password
+            - name: POSTGRES_DATABASE
+              value: "bitnami_broker"
+            # LDAP
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            # TLS
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            # Audit
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            # Others
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: "error"
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: "pgaudit"
+          ports:
+            - name: tcp-postgresql
+              containerPort: 5432
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "bn_broker" -d "dbname=bitnami_broker" -h 127.0.0.1 -p 5432
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U "bn_broker" -d "dbname=bitnami_broker" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 2Gi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/tmp
+              subPath: app-tmp-dir
+            - name: postgresql-password
+              mountPath: /opt/bitnami/postgresql/secrets/
+            - name: dshm
+              mountPath: /dev/shm
+            - name: data
+              mountPath: /bitnami/postgresql
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: postgresql-password
+          secret:
+            secretName: pact-broker-postgresql
+        - name: dshm
+          emptyDir:
+            medium: Memory
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "8Gi"
+---
+# Source: pact-broker/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pact-broker
+  namespace: "pact-broker-poc"
+  labels:
+    app.kubernetes.io/name: pact-broker
+    helm.sh/chart: pact-broker-3.3.1
+    app.kubernetes.io/instance: pact-broker
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: "2.112.0"
+    app.kubernetes.io/component: pact-broker
+  annotations:
+spec:
+  rules:
+    - host: 
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pact-broker
+                port:
+                  number: 80
