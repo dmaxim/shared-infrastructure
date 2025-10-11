@@ -19,6 +19,7 @@ argocd account update-password
 ```
 
 
+
 ## Setup Argo App
 
 ```
