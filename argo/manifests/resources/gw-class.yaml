@@ -1,0 +1,29 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  annotations:
+    meta.helm.sh/release-name: traefik
+    meta.helm.sh/release-namespace: traefik
+  labels:
+    app.kubernetes.io/instance: traefik-traefik
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: traefik
+    helm.sh/chart: traefik-38.0.1
+  name: traefik-gateway
+  namespace: traefik
+spec:
+  gatewayClassName: traefik
+  listeners:
+  - allowedRoutes:
+      namespaces:
+        from: Same
+    name: web
+    port: 8000
+    protocol: HTTP
+  # - name: http
+  #   port: 80
+  #   protocol: HTTP
+  #   #hostname: git-ops.danmaxim.net
+  #   allowedRoutes:
+  #     namespaces:
+  #       from: All

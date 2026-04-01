@@ -1,11 +1,71 @@
+# Logging configuration for debugging
+logs:
+  general:
+    level: DEBUG
+  access:
+    enabled: true
+
+
+# Entrypoints configuration
+ports:
+  web:
+    port: 8000
+    exposedPort: 80
+    protocol: TCP
+  websecure:
+    port: 8443
+    exposedPort: 443
+    protocol: TCP
+    http3:
+      enabled: false
+    tls:
+      enabled: true
+      # TLS certificates will be managed by cert-manager
+
 providers:
-  # Disable the Ingress provider (optional)
-  # We do not want to use Ingress objects anymore!
+  # Enable the Ingress provider for cert-manager integration
   kubernetesIngress:
-    enabled: false
+    enabled: true
+    publishedService:
+      enabled: true
   # Enable the GatewayAPI provider
   kubernetesGateway:
     enabled: true
-# Allow the Gateway to expose HTTPRoute from all namespaces
+
+# Gateway API configuration
 gateway:
+  # Allow the Gateway to expose HTTPRoute from all namespaces
   namespacePolicy: All
+  # Configure listeners for the Gateway
+  listeners:
+    web:
+      port: 8000
+      protocol: HTTP
+    websecure:
+      port: 8443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+      certificateRefs:
+        - name: traefik-tls-cert
+          kind: Secret
+      # TLS will be configured via Certificate references in Gateway resources
+      # cert-manager will provide the certificates
+      #tls:
+      #  enabled: true
+      #  certificateResolver: cert-manager
+
+# Enable the dashboard (optional, but useful for debugging)
+dashboard:
+  enabled: true
+  # Secure the dashboard with basic auth or disable for production
+
+# Global redirect from HTTP to HTTPS (optional)
+# Uncomment to enable automatic redirect
+# entryPoints:
+#   web:
+#     http:
+#       redirections:
+#         entryPoint:
+#           to: websecure
+#           scheme: https

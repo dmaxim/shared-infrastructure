@@ -1,21 +1,110 @@
-apiVersion: gateway.networking.k8s.io/v1
-kind: HTTPRoute
+# Create Kubernetes certificate
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: argocd-tls-cert
+#   namespace: argocd
+# spec:
+#   secretName: argocd-tls-cert
+#   dnsNames:
+#   - git-ops.danmaxim.net
+#   issuerRef:
+#     name: letsencrypt-prod
+#     kind: ClusterIssuer
+# ---
+
+# # Gateway configuration with TLS
+# apiVersion: gateway.networking.k8s.io/v1
+# kind: Gateway
+# metadata:
+#   name: mxinfo-gateway
+#   namespace: traefik
+# spec:
+#   gatewayClassName: traefik
+#   listeners:
+#   - name: websecure
+#     protocol: HTTPS
+#     port: 443
+#     hostname: argo-ops.danmaxim.net
+#     tls:
+#       mode: Terminate
+#       certificateRefs:
+#       - name: argocd-tls-cert
+#         kind: Secret
+#     allowedRoutes:
+#       namespaces:
+#         from: All
+---
+# apiVersion: gateway.networking.k8s.io/v1
+# kind: HTTPRoute
+# metadata:
+#   name: argocd-route
+#   namespace: argocd
+# spec:
+#   parentRefs:
+#   - name: traefik-gateway
+#     namespace: traefik
+#     sectionName: web
+#     kind: Gateway
+#   hostnames:
+#   - git-ops.danmaxim.net
+#   rules:
+#   - matches:
+#     - path:
+#         type: PathPrefix
+#         value: /
+#     backendRefs:
+#     - name: argocd-server
+#       namespace: argocd
+#       port: 443
+# ---
+# apiVersion: traefik.io/v1alpha1
+# kind: IngressRoute
+# metadata:
+#   name: argocd-ingressroute
+#   namespace: argocd
+# spec:
+#   entryPoints:
+#     - web # Adjust to 'websecure' if using HTTPS
+#   routes:
+#   - match: Host(`git-ops.danmaxim.net`)
+#     kind: Rule
+#     services:
+#     - name: argocd-server
+#       port: 80  
+  # Adjust to 443 if using HTTPS
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: argocd-route
+  annotations:
+    #cert-manager.io/cluster-issuer: letsencrypt-prod
+    #kubernetes.io/ingress.class: nginx
+    #kubernetes.io/tls-acme: "true"
+    #traefik.ingress.kubernetes.io/route-entrypoints: websecure
+    #traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/tls-passthrough: "true"
+    #cert-manager.io/issue-temporary-certificate: "true"
+    traefik.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    traefik.ingress.kubernetes.io/service.serverstransport: default@internal
+  labels:
+    app: argocd-server
+    release: argocd-ingres
+  name: argocd-ui
   namespace: argocd
 spec:
-  parentRefs:
-  - name: traefik-gateway
-    namespace: traefik
-    sectionName: websecure
-  hostnames:
-  - git-ops.danmaxim.net
+  ingressClassName: traefik
   rules:
-  - matches:
-    - path:
-        type: PathPrefix
-        value: /
-    backendRefs:
-    - name: argocd-server
-      namespace: argocd
-      port: 80
+    - host: git-ops.danmaxim.net
+      http:
+        paths:
+          - backend:
+              service:
+                name: argocd-server
+                port:
+                  name: https
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - git-ops.danmaxim.net
+      secretName: traefik-tls-secret
